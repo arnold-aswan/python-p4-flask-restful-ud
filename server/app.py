@@ -79,6 +79,30 @@ class NewsletterByID(Resource):
         )
 
         return response
+    
+    def patch(Self, id):
+        record = Newsletter.query.filter_by(id=id).first()
+        
+        for attr in request.form:#Looping through the form data gives us its keys, the attribute names to be changed
+            setattr(record, attr, request.form[attr]) # set each attribute on the Newsletter object to its new value with setattr()
+       
+        db.session.add(record)
+        db.session.commit()
+        
+        record_dict = record.to_dict()
+        
+        response = make_response(record_dict, 200)
+        return response
+        
+    def delete(self, id):
+        record = Newsletter.query.filter_by(id=id).first() 
+        
+        db.session.delete(record)
+        db.session.commit()
+        
+        response_dict = {"message": "record successfully deleted"}
+        
+        response = make_response(response_dict, 200)   
 
 api.add_resource(NewsletterByID, '/newsletters/<int:id>')
 
